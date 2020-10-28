@@ -5,8 +5,10 @@ import Message from './components/Message/Message';
 import MessageForm from './components/MessageForm/MessageForm';
 
 export default function App() {
+  const [newUser, setNewUser] = useState("");
   const [newMessage, setNewMessage] = useState("");
   const [messages, setMessages] = useState([]);
+
   useEffect(() => {
     db.ref('/messages').on('value',(snapshot) => {
       const fbMessages = snapshot.val();
@@ -23,7 +25,7 @@ export default function App() {
   const handleSubmit = (event) => {
     event.preventDefault();
     const messageObj = {
-      user : 'Patryk',
+      user : newUser,
       content: newMessage,
       datetime: Date.now()
     };
@@ -31,19 +33,25 @@ export default function App() {
     if (newMessage) {
      db.ref('/messages').push(messageObj);
     }
+
     setNewMessage("");
+    setNewUser("");
   }
 
   return (
     <div className="App">
-      {messages.map(message => (
-        <Message key={message.id} message={message} />
-      ))}
-      <MessageForm 
-        message = {newMessage.content}
-        handleSubmit = {handleSubmit} 
-        handleContentChange = {setNewMessage}
-       />
+      <div className="container">
+        <MessageForm
+          user = {newUser.user}
+          message = {newMessage.content}
+          handleSubmit = {handleSubmit}
+          handleContentChange = {setNewMessage}
+          handleUserChange = {setNewUser}
+        />
+        {messages.map(message => (
+          <Message key={message.id} message={message} />
+        ))}
+      </div>
     </div>
   );
 }
